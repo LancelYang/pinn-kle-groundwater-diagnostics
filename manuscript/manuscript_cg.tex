@@ -1,0 +1,1066 @@
+%% Computational Geosciences — Springer Nature LaTeX submission
+%% Template: sn-jnl v3.1, option [iicol,sn-mathphys-num]
+%% All figure files at root level for submission (Fig1.png–Fig4.png).
+
+\documentclass[pdflatex,sn-mathphys,Numbered,iicol]{sn-jnl}
+
+%% ---- Packages ----
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage[title]{appendix}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{manyfoot}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+%% ---- Custom commands ----
+\newcommand{\logK}{\ln K}
+\newcommand{\bxi}{\boldsymbol{\xi}}
+\newcommand{\bxiast}{\boldsymbol{\xi}^{*}}
+\newcommand{\bxitrue}{\boldsymbol{\xi}_{\mathrm{true}}}
+\newcommand{\nobs}{n_{\mathrm{obs}}}
+\newcommand{\kappaJ}{\kappa(\mathbf{J})}
+\newcommand{\kappaHGN}{\kappa(\mathbf{H}_{\mathrm{GN}})}
+
+%% ---- Manuscript info ----
+\title[Separating observability and workflow limitations]{Separating linearized observability, direct recoverability, and workflow limitations in physics-informed neural network inversion}
+
+\author*[1]{\fnm{Fei} \sur{Yang}}\email{yangf@cigem.cn}
+
+\affil[1]{\orgname{China Institute of Geo-Environment Monitoring}, \orgdiv{China Geological Survey}, \street{Minzu University South Road}, \city{Beijing}, \postcode{100081}, \country{China}}
+
+\abstract{Physics-informed neural networks (PINNs) are increasingly used for groundwater inverse problems, but a good hydraulic-head fit does not establish conductivity recovery. We present a controlled diagnostic study of PINN-KLE conductivity inversion for steady two-dimensional groundwater flow, aiming to separate local information content, gradient transfer, round-selection quality, and workflow-limited recovery---where recoverable information exists in the direct reduced map but is not reliably transmitted by the staged workflow.
+
+Gradient audits show that the head-observation loss provides no direct gradient pathway to KLE coefficients; updates are mediated exclusively through the PDE-residual branch, whose direction is weakly aligned with truth. A no-truth round selector identifies the best alternating round in 17/18 cases, yet only 3/18 weak-pass conductivity recovery. The direct FDM-KLE baseline weak-passes 24/24 cases across eight truth realizations ($\sigma_{\log K}=0.17$--$0.80$), confirming that the sparse inverse problem contains recoverable low-dimensional information; the failure is therefore workflow-limited relative to the matched direct baseline. Jacobian diagnostics show full linearized local rank for 3/5/10-mode direct maps at $\nobs=200$ and for 3-mode maps across 50--400 observation points, with conditioning burden increasing with mode count. Local sensitivity at hybrid-recovered coefficients remains comparable to true-point conditioning (condition-number ratio 0.919--1.010, median 0.953, across twelve paired cases), indicating that failures do not arise from loss of local direct-map observability. The paper argues for a more careful diagnostic standard: head fitting, linearized local observability, direct deterministic baselines, and closed-loop conductivity recovery must be reported separately.}
+
+\keywords{Groundwater inverse problem, Physics-informed neural networks, Karhunen--Lo\`eve expansion, Local observability, Workflow diagnostics}
+
+\pacs[MSC Classification]{65N21, 86A05, 68T07, 35R30, 65N06}
+
+%% =====================================================================
+\begin{document}
+\maketitle
+
+%% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Groundwater conductivity inversion is a classical ill-posed inverse problem.
+Sparse hydraulic-head observations provide indirect and smoothed information
+about subsurface heterogeneity, and the answer obtained from an inverse model
+depends strongly on parameterization, prior structure, boundary forcing, and
+the richness of hydraulic excitation~\cite{mclaughlin1996reassessment,
+carrera1986aquifer1, carrera1986aquifer2, kitanidis1995quasilinear,
+zhou2014inverse, yeh2000hydraulic}. The identifiability of aquifer
+parameters from limited head data has been studied extensively:
+Sun and Yeh~\cite{sun1990identifiability} introduced coupled inverse-analysis
+and experimental design concepts, Hill and
+Tiedeman~\cite{hill2007effective} developed sensitivity-based calibration
+methods, and Tarantola~\cite{tarantola2005inverse} and Aster et
+al.~\cite{aster2018parameter} provided general inverse-theory frameworks for
+parameter estimation. Hydraulic tomography further demonstrated that multiple
+pumping tests can improve subsurface
+characterization~\cite{zhu2005characterization, cardiff2013hydraulic,
+yeh2015flow}. Physics-informed neural networks offer an attractive
+differentiable framework for combining neural approximators with partial
+differential equations~\cite{raissi2019pinn, karniadakis2021piml}, and they
+have been applied to subsurface-flow parameter learning and groundwater
+inverse modeling~\cite{tartakovsky2020subsurface, guo2023htpinn,
+bandai2022forward, ji2024groundwater, gong2025klepinnc}. However, PINNs do
+not remove the information-content problem that makes groundwater inversion
+difficult. A neural model can match observed heads while still failing to
+identify conductivity parameters.
+
+This paper focuses on that evaluation gap. In some recent PINN inverse
+studies, the reported evidence is dominated by head misfit, PDE residual, or
+visual agreement. For conductivity inversion studies, these diagnostics are
+insufficient unless they are connected to coefficient-level recovery. In a
+PINN-KLE setting, one must ask whether the data term produces gradients with
+respect to the KLE coefficients, whether alternating training rounds can be
+selected without using full-field truth, whether recovered coefficients pass an
+internal consistency check, and whether a direct physics-based inverse
+baseline can recover coefficients in cases where the tested PINN workflow does
+not.
+
+We study these questions in a deliberately controlled steady groundwater
+benchmark. The benchmark is not intended to reproduce all features of a field
+aquifer. Instead, it is designed to make different failure modes separable. A
+failure may be structural, meaning that the observations and equations do not
+determine the parameter. It may be a practical recovery failure under finite
+noisy data. It may be local uncertainty in a shallow objective valley. Or it
+may be workflow-limited: a direct baseline can recover the reduced parameters,
+but the tested PINN-hybrid workflow cannot transmit that information into a
+conductivity estimate.
+
+The contributions are:
+\begin{enumerate}
+\item a controlled numerical diagnostic study for sparse-head PINN-KLE
+  groundwater inversion;
+\item a loss-structure gradient audit showing that the standard head-only data
+  loss does not directly update KLE coefficients;
+\item a no-truth round-selection audit that separates choosing the best
+  available alternating round from achieving conductivity recovery;
+\item a matched direct FDM-KLE least-squares baseline showing that the main
+  moderate-noise 3-mode failure is consistent with a workflow-limited
+  interpretation in the tested setting;
+\item sparse-head Jacobian, Fisher-information, and Gauss-Newton diagnostics
+  showing linearized local observability for the direct map, increasing
+  conditioning burden with mode count, and comparable conditioning at
+  hybrid-recovered coefficients---supporting the interpretation that the workflow failure does not
+  arise from loss of local direct-map observability at the recovered parameters.
+\end{enumerate}
+
+The central claim is deliberately narrow: the tested PINN-hybrid workflow can
+lose coefficient information that is still accessible to a direct deterministic
+FDM-KLE inverse baseline. The paper does not claim that all PINN inverse
+formulations fail, nor that the numerical thresholds found here transfer
+unchanged to real aquifers.
+
+%% =====================================================================
+\section{Problem setup and parameterization}
+\label{sec:setup}
+
+\subsection{Governing equation and boundary conditions}
+\label{sec:pde}
+
+All experiments solve a steady two-dimensional saturated groundwater flow
+problem on the unit square:
+\begin{equation}
+  \nabla \cdot \bigl( K \, \nabla h \bigr) = 0, \quad (x,y) \in (0,1)^2, \quad K(x,y) > 0.
+  \label{eq:pde}
+\end{equation}
+The default boundary conditions impose fixed heads at the left and right
+boundaries and no-flow conditions at the top and bottom:
+\begin{equation}
+  h\big|_{x=0} = 1, \quad h\big|_{x=1} = 0, \quad
+  \mathbf{n} \cdot K \nabla h \,\big|_{y=0,\,y=1} = 0.
+  \label{eq:bc}
+\end{equation}
+
+This source-free steady setup is intentionally simple. It removes pumping,
+recharge, transient response, irregular geometry, and conceptual-model
+uncertainty so that workflow-level failures can be interpreted without field
+ambiguity. The limitation is equally important: numerical thresholds reported
+here are benchmark-specific and should not be treated as monitoring-network
+design rules for real aquifers.
+
+\subsection{KLE log-conductivity model}
+\label{sec:kle}
+
+The heterogeneous log-conductivity field is represented with a truncated KLE:
+\begin{equation}
+  \logK(x, y) = \overline{\logK}
+    + \sum_{i=1}^{M} \xi_i \, \sqrt{\lambda_i} \, \phi_i(x, y),
+  \label{eq:kle}
+\end{equation}
+where $\overline{\logK}$ is the mean log-conductivity, $\lambda_i$ and
+$\phi_i$ are the eigenvalues and eigenfunctions of the spatial covariance
+kernel, $\xi_i$ are the dimensionless stochastic coefficients, and $M$ is
+the truncation order. The coefficient vector
+$\bxi = (\xi_1, \ldots, \xi_M)^\top$ is the target reduced-order coefficient
+vector of the inverse problem.
+Most matched-noise comparisons use a 3-mode KLE target ($M=3$). Additional
+mode-bridge experiments examine $M=5$ and $M=10$ settings. The KLE
+representation follows standard KLE formulations for random fields and flow in
+heterogeneous media~\cite{ghanem1991stochastic, zhang2004efficient,
+lu2004conditional}. It is used as a controlled reduced parameterization, not as
+a universal geological model. It lets us ask whether low-dimensional
+information is present in the data and whether the tested workflow can recover
+it.
+
+\subsection{Synthetic observations and closed-loop validation}
+\label{sec:obs}
+
+Synthetic sparse head observations are sampled from FDM reference solutions
+and perturbed by controlled Gaussian noise. Recovery quality is evaluated
+through a closed-loop FDM solve: the estimated conductivity coefficients are
+inserted back into the FDM forward model, and the resulting hydraulic head is
+compared with the reference field. The main metrics are:
+\begin{itemize}
+\item closed-loop head RMSE;
+\item log-conductivity RMSE;
+\item KLE coefficient correlation;
+\item weak-pass and strong-pass operational recovery labels (weak-pass:
+      $\log K$ RMSE $<0.15$ and $h$ RMSE $<0.006$; strong-pass: $\log K$
+      RMSE $<0.10$ and $h$ RMSE $<0.003$).
+\end{itemize}
+The pass labels are audit thresholds, not physical phase transitions. They are
+used to summarize whether a run achieved a useful coefficient recovery under
+the stated benchmark criteria. The closed-loop check uses the same FDM forward
+family as the reference solution; it is an internal consistency check on the
+coefficient estimate, not an independent model validation against a different
+physics solver.
+
+%% =====================================================================
+\section{Diagnostic methods}
+\label{sec:methods}
+
+\subsection{PINN-KLE gradient audit}
+\label{sec:grad-audit}
+
+In the tested staged PINN-KLE formulation, a neural network approximates the head
+field, while the KLE coefficients are treated as trainable variables. The loss
+contains head-observation, boundary-condition, and PDE-residual terms. We
+compute component-wise gradients of these loss terms with respect to the KLE
+coefficients. This diagnostic asks a simple question: which terms actually
+provide coefficient-level gradient information?
+
+The gradient audit is not a convergence test. It is a structural diagnostic of
+the loss pathway. In the tested workflow, the head-observation loss updates only
+the neural head approximator and provides no direct gradient pathway to $\bxi$;
+therefore, head fitting alone cannot by itself serve as sufficient evidence of conductivity
+recovery. This diagnostic is workflow-specific and does not describe all PINN
+formulations---it reflects the staged-freeze design of the tested workflow.
+
+\subsection{Hybrid PINN-FDM workflow}
+\label{sec:workflow}
+
+The staged PINN-FDM workflow separates head approximation from coefficient
+recovery:
+\begin{enumerate}
+\item Stage A fits a neural head field using sparse observations and physics
+  constraints.
+\item Stage B freezes the sampled head field on a grid and optimizes KLE
+  coefficients through a discrete residual.
+\item Stage C performs an FDM forward solve using the recovered coefficients
+  and evaluates closed-loop metrics.
+\end{enumerate}
+Alternating Stage A/B/C rounds are repeated. Earlier experiments used oracle
+full-field head RMSE to choose the best round, which is not available in field
+applications. The current diagnostic uses sparse-observation RMSE as a
+no-truth selector and audits it against oracle head RMSE only in synthetic
+mode.
+
+\subsection{Direct FDM-KLE least-squares baseline}
+\label{sec:baseline}
+
+The direct baseline optimizes the same KLE coefficients against the same
+sparse head observations using repeated FDM forward solves. It is a
+deterministic parameter-estimation baseline in the same reduced KLE space.
+This baseline is not intended to mimic every feature of PEST, EnKF, or other
+hydrogeologic inversion systems. Its role is sharper: if the direct FDM-KLE
+baseline recovers the coefficients while the PINN-hybrid workflow fails, then
+the failure cannot be attributed simply to absence of low-dimensional
+information in the observations.
+
+\subsection{Workflow-diagnostics aggregation}
+\label{sec:diag-aggregate}
+
+The workflow diagnostics package combines five post-processing audit layers.
+Each layer addresses a specific failure-mode question. None of the layers
+requires re-running the forward or inverse model; they aggregate existing
+training outputs into a diagnostic chain.
+
+\paragraph{Layer 1: Gradient-transfer audit.}
+For each loss component $\mathcal{L}_k$ (head observation, boundary condition,
+PDE residual), we record the gradient vector
+$\nabla_{\bxi} \mathcal{L}_k$ at selected training steps. The audit asks:
+which loss terms produce non-zero gradients with respect to the KLE
+coefficients? If the data loss provides no direct computational gradient
+pathway, then head fitting alone cannot drive coefficient updates. We also compute the cosine similarity
+between the PDE-loss gradient direction and the direction from the current
+$\bxi$ to $\bxitrue$ to assess gradient alignment.
+
+\paragraph{Layer 2: Selector-versus-recovery audit.}
+After all alternating rounds are completed, we evaluate two independent
+criteria: (a) the \emph{selector} quality, defined as the sparse-observation
+RMSE of the chosen round relative to the oracle-best round, and (b) the
+\emph{recovery} quality, defined as the closed-loop logK RMSE of the chosen
+round. A round can have excellent selector quality (near-zero oracle regret)
+but poor recovery quality. This separation is essential because field
+applications must select rounds without access to truth.
+
+\paragraph{Layer 3: Matched direct-baseline gap.}
+For each PINN-hybrid case, we run a direct FDM-KLE least-squares inversion
+(Section~\ref{sec:baseline}) using the same truth, same observation
+locations, and same noise realization. The gap between the direct baseline's
+logK RMSE and the hybrid's logK RMSE measures workflow-limited information
+loss. If the direct baseline recovers the coefficients and the hybrid does
+not, the failure is not attributable to absence of low-dimensional
+information in the data.
+
+\paragraph{Layer 4: Late-round degradation audit.}
+We track the per-round Stage A head RMSE, Stage B logK RMSE, and Stage C
+closed-loop head RMSE across alternating rounds. A transition is classified as
+\emph{degrading} if the Stage C RMSE worsens from one round to the next. For
+each degrading transition, we record whether Stage A head RMSE, Stage B logK
+RMSE, or both rebounded, and compute the correlation between Stage B
+logK-RMSE change and Stage C head-RMSE change. This identifies whether late
+degradation is driven by Stage A fitting failure, Stage B coefficient damage,
+or A/B coupling.
+
+\paragraph{Layer 5: Mode-bridge diagnostic.}
+We compare hybrid recovery with a perfect-head coefficient recovery reference.
+The perfect-head reference solves the inverse problem using the full-field FDM
+head solution as input rather than a neural approximation. The ratio of hybrid
+logK RMSE to perfect-head logK RMSE quantifies the workflow damage
+attributable to the neural head approximation versus the increasing
+conditioning burden of higher mode counts.
+
+\subsection{Sparse-head Jacobian, Fisher information, and Gauss-Newton Hessian}
+\label{sec:jacobian}
+
+For the direct FDM-KLE observation map, we compute a finite-difference
+sensitivity matrix (the Jacobian) at a reference coefficient vector
+$\bxiast$:
+\begin{equation}
+  \begin{aligned}
+  J_{ij} &= \frac{\partial h(\mathbf{x}_i;\, \bxiast)}{\partial \xi_j},\\
+  i &= 1,\ldots,\nobs, \quad j = 1,\ldots,M,
+  \end{aligned}
+  \label{eq:jacobian}
+\end{equation}
+where $\mathbf{x}_i$ are the sparse observation locations. The
+finite-difference approximation uses an absolute perturbation
+$\delta = 10^{-3}$:
+\begin{equation}
+  J_{ij} \approx
+    \frac{h(\mathbf{x}_i;\, \bxiast + \delta\,\mathbf{e}_j)
+          - h(\mathbf{x}_i;\, \bxiast - \delta\,\mathbf{e}_j)}
+         {2\,\delta}.
+  \label{eq:fd-jacobian}
+\end{equation}
+From this matrix we form the local Fisher-information approximation under
+least-squares Gauss--Newton linearization and the Gauss-Newton Hessian
+approximation~\cite{sun1990identifiability, tarantola2005inverse,
+aster2018parameter}:
+\begin{equation}
+  \mathbf{F} = \frac{1}{\sigma^2} \, \mathbf{J}^\top \mathbf{J},
+  \qquad
+  \mathbf{H}_{\mathrm{GN}} = 2\,\mathbf{J}^\top \mathbf{J},
+  \label{eq:fim-hgn}
+\end{equation}
+where $\sigma^2$ is the observation-noise variance. Under the standard
+assumption of iid Gaussian observation errors with variance $\sigma^2$,
+$\mathbf{F}$ corresponds to the Fisher information matrix for the linearized
+observation model. Because $\mathbf{F}$ and
+$\mathbf{H}_{\mathrm{GN}}$ share the same rank and their singular-value
+ratios are determined by $\mathbf{J}$ alone (up to the noise-dependent
+scaling $1/\sigma^2$), the Jacobian rank and singular-value spectrum suffice
+to diagnose local observability and conditioning of the direct reduced inverse
+map. Under the present least-squares Gauss-Newton formulation, scanning the
+noise level $\sigma$ only rescales the eigenvalues and does
+not change the rank or condition number of $\mathbf{F}$. We note that the
+condition numbers satisfy $\kappa(\mathbf{H}_{\mathrm{GN}}) =
+\kappa(\mathbf{F})$ and, for the standard spectral condition number,
+$\kappa(\mathbf{H}_{\mathrm{GN}}) \approx \kappa(\mathbf{J})^2$; the larger
+HGN values reported in the results reflect this squaring relationship and do
+not indicate a qualitatively different conditioning regime.
+
+These diagnostics are local and linearization-based: they do not prove global
+identifiability, uniqueness, or absence of multimodal
+structure~\cite{sun1990identifiability, hill2007effective}. They do, however,
+test whether small perturbations in all coefficient directions are detectable by
+the sparse-head map at the linearization point. We apply the Jacobian diagnostic at two types of
+reference points: (a) the true coefficient vector and (b) the
+hybrid-recovered coefficient vector, to test whether workflow
+failure coincides with loss of local observability.
+
+%% =====================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Head-observation loss does not directly identify KLE coefficients}
+\label{sec:res-grad}
+
+The gradient audit shows that in the tested staged workflow, the
+head-observation loss provides no direct gradient pathway to KLE coefficients
+both before and after Stage A. In
+the representative diagnostic case, the initial PDE-loss coefficient-gradient
+norm is $4.84 \times 10^{3}$, while the after-Stage-A PDE-loss
+coefficient-gradient norm falls to $1.68$. The PDE gradient direction is only
+weakly aligned with the direction to the true coefficients: the cosine is
+$0.200$ initially and $0.309$ after Stage A. The first actual
+coefficient-update direction has cosine $0.056$ with the direction to truth.
+
+This explains why head fitting alone is a weak inverse-success diagnostic in
+the tested PINN-KLE formulation. Coefficient information reaches $\bxi$
+through the PDE-residual branch in the implemented staged workflow, not directly
+through the sparse head data term. This is consistent with broader PINN evidence that optimization
+pathologies and gradient imbalance can strongly affect whether
+physics-informed losses transmit useful parameter
+information~\cite{wang2021gradient, krishnapriyan2021failure}
+(Figure~\ref{fig:workflow}).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig1.png}
+  \caption{Workflow diagnostics for the tested PINN-KLE inverse procedure.
+    Panel~A summarizes the coefficient-gradient transfer audit. Panel~B
+    separates no-truth selector quality from conductivity recovery (fractions
+    computed across noise groups of unequal case counts; see Section~4.2).
+    Panel~C compares median logK RMSE for direct FDM-KLE and PINN-hybrid cases.
+    Panel~D summarizes late-round degradation drivers; bars are not mutually
+    exclusive (total transitions~$=$~38, of which a subset co-occur).}
+  \label{fig:workflow}
+\end{figure*}
+
+\subsection{No-truth round selection is not the same as recovery}
+\label{sec:res-selector}
+
+The observation-RMSE selector performs well in the current medium-budget pilot
+aggregate, which spans five noise levels ($\sigma=0.005,0.01,0.015,0.02,0.05$)
+and therefore extends beyond the compact matrix's three-level scan. Across 18
+cases, all 18 are hard-pass selector cases. However,
+only 1 of these 18 cases passes the conductivity-recovery criterion. The
+median hybrid logK RMSE increases from $0.153$ at noise $\sigma=0.005$ to
+$0.178$, $0.236$, $0.318$, and $1.133$ at noise levels $\sigma=0.01$,
+$0.015$, $0.02$, and $0.05$, respectively.
+
+The conclusion is not that the selector fails. Rather, it correctly answers a
+limited operational question: which available alternating round is best under a
+no-truth sparse-observation criterion? That question is distinct from whether
+the best available round contains a useful conductivity estimate.
+
+\subsection{Direct FDM-KLE exposes workflow-limited recovery loss}
+\label{sec:res-baseline}
+
+The direct FDM-KLE comparison is the central workflow diagnostic. We present
+three progressively controlled experimental phases: an initial medium-budget
+pilot aggregate, a compact multi-truth matrix, and a targeted three-seed
+audit.
+
+\paragraph{Pilot aggregate.}
+Across the initial matched aggregate, direct FDM-KLE weak-passes 15/18 cases,
+while PINN-hybrid weak-passes 1/18. The median logK RMSE of the direct
+baseline remains below or near the weak-pass threshold through moderate noise,
+whereas the PINN-hybrid median logK RMSE is already above threshold at noise
+$\sigma=0.005$ and grows with noise.
+
+At noise $\sigma=0.01$ and $0.015$, the direct baseline weak-passes all
+matched fine transition cases, while the medium-budget PINN-hybrid workflow
+weak-passes none. At noise $\sigma=0.02$, the direct baseline again
+weak-passes all matched cases in the medium-budget comparison, while the
+PINN-hybrid workflow fails. These results support the workflow-limited
+interpretation: the sparse direct inverse problem still contains recoverable
+low-dimensional information, but the tested PINN-hybrid workflow does not
+reliably transmit it into recovered coefficients.
+
+\paragraph{Compact multi-truth matrix.}
+As a controlled multi-truth check, we ran direct FDM-KLE on eight
+3-mode truth realizations spanning $\log K$ standard deviations from $0.17$ to
+$0.80$, at $\nobs=200$ and three noise levels ($\sigma=0.005,0.01,0.02$) using
+a single observation seed. The direct baseline passed all 24 cases ($8 \times 3$)
+under both weak and strong criteria. Median closed-loop logK RMSE increased with
+noise, from $0.018$ at $\sigma=0.005$ to $0.036$ at $\sigma=0.01$ and $0.072$
+at $\sigma=0.02$, remaining well below the weak-pass threshold ($\log K$ RMSE $<0.15$, $h$ RMSE $<0.006$). In the
+most challenging display truth ($8$, $\sigma_{\log K}=0.80$), logK RMSE reached
+$0.089$ at $\sigma=0.02$ but still satisfied the weak-pass criterion. The full
+8-truth results are provided in Online Resource~1. By
+contrast, the five additional truths are evaluated as FDM-only baselines;
+matched PINN-hybrid comparisons remain with the three original display truths
+($1$, $2$, $3$) for which seed-audit hybrid data already exist.
+
+The matched PINN-hybrid expansion was then run for the more favorable
+$\nobs=200$ subset of the same three truths and three noise levels. The
+contrast is sharp. In the matched $\nobs=200$ cases, direct FDM-KLE passes
+all 9 cases under both weak and strong criteria. PINN-hybrid produces hard-pass
+no-truth selector outcomes in all 9 cases, with zero oracle head-RMSE regret,
+but weak-passes only 2/9 and strong-passes 0/9. By noise, PINN-hybrid
+weak-passes 1/3 at $\sigma=0.005$, 1/3 at $\sigma=0.01$, and 0/3 at
+$\sigma=0.02$; the corresponding median logK RMSE values are $0.590$,
+$0.626$, and $0.777$. By truth, the workflow is near the weak-pass boundary
+for truth $1$, but fails all tested noise levels for truths $2$ and $3$.
+The compact matched matrix therefore reinforces the separation between direct
+recoverability, round-selection quality, and workflow recovery.
+
+\paragraph{Three-seed audit.}
+To check whether this contrast is an artifact of a single observation/training
+seed, we repeated the compact comparison at $\nobs=200$ for the two bracketing
+noise levels ($\sigma=0.005$ and $0.02$) using three seeds ($202$, $303$, and
+$404$). Across these 18 seed-audit cases, direct FDM-KLE weak-passes all 18
+and strong-passes 15. In the matched PINN-hybrid audit, the selector remains
+operationally reliable in 17/18 cases with median oracle head-RMSE regret
+equal to zero, but conductivity recovery weak-passes only 3/18 and never
+strong-passes. The truth dependence persists: truth $1$ weak-passes 3/6
+hybrid cases, whereas truths $2$ and $3$ weak-pass 0/6 each. This
+targeted seed audit does not replace a full statistical ensemble, but it
+removes the most immediate single-seed explanation for the observed
+workflow-limited gap. Seeds 202, 303, and 404 were selected as a targeted
+bracket rather than a random draw from a full factorial design; the audit
+removes the most immediate single-seed explanation but does not establish
+seed-averaged statistics.
+
+\subsection{Late-round degradation is Stage-B-led with frequent coupling}
+\label{sec:res-degrade}
+
+The alternating-round degradation audit analyzes 11 runs and 38
+round-to-round transitions. Nine transitions worsen the Stage C closed-loop
+head RMSE. All 9 of these worsening transitions include a rebound in Stage B
+logK RMSE, while 6 also include a rebound in Stage A head RMSE. On worsening
+transitions, the correlation between the Stage B logK-RMSE change and the
+Stage C head-RMSE change is $0.784$.
+
+This result argues against a simplistic explanation in which the workflow
+failure is only a Stage A head-fitting problem. Late degradation is better
+described as Stage-B-led with frequent Stage A/B coupling near the stopping
+point.
+
+\subsection{Direct-map sensitivity shows linearized local observability with
+increasing conditioning burden}
+\label{sec:res-obs}
+
+The finite-difference sparse-head Jacobian diagnostic gives full relative rank
+for the tested 3/5/10-mode direct maps at $\nobs=200$. The Jacobian condition
+number increases with mode count
+(Table~\ref{tab:cond}, Figure~\ref{fig:sensitivity}).
+
+\begin{table}[t]
+  \caption{Jacobian and Gauss-Newton condition numbers for 3/5/10-mode
+    direct FDM-KLE maps at $\nobs=200$.}
+  \label{tab:cond}
+  \centering
+  \begin{tabular}{lccc}
+    \toprule
+    Mode count & Rank & $\kappaJ$ & $\kappaHGN$ \\
+    \midrule
+    3  & 3/3 & 10.6 & 112 \\
+    5  & 5/5 & 35.6 & $1.27\times10^{3}$ \\
+    10 & 10/10 & 54.3 & $2.95\times10^{3}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+This result does not prove global identifiability. Full column rank of the
+Jacobian at a reference point implies linearized local observability---that is,
+small perturbations in all coefficient directions are detectable by the
+sparse-head map at the linearization point. Global identifiability, uniqueness,
+and optimization convergence are not implied. The tested observation layout
+shows linearized local observability through 10 modes. Therefore, higher-mode
+hybrid failure should not be described as proven absence of local information.
+It is more consistent with workflow damage and increasing conditioning burden.
+
+The same 3-mode diagnostic was then repeated at the three compact-matrix display
+truth realizations ($1$, $2$, and $3$) with $\nobs=200$. All three cases
+remain full rank ($3/3$). Their Jacobian condition numbers are $10.8$,
+$7.53$, and $11.4$, respectively, with Gauss-Newton condition numbers $117$,
+$56.7$, and $131$. This truth sweep is important because truth $2$, one of
+the severe PINN-hybrid failure cases, is not the worst conditioned direct map;
+it is the best conditioned of the three in this local diagnostic. Thus, the
+compact truth results strengthen the workflow-limited interpretation: the
+tested hybrid failures do not coincide with loss of local direct-map
+observability at the true coefficients.
+
+To check whether the full-rank finding is an artifact of the observation
+density, we repeated the truth-point FIM diagnostic for the same three display truths
+across four observation layouts ($\nobs = 50, 100, 200, 400$) at
+$\sigma=0.005$. All 12 cases remain full rank ($3/3$). Truth $2$ retains
+the best conditioning across all densities, with Jacobian condition numbers
+$6.4$, $6.9$, $7.5$, and $7.8$ at $\nobs=50, 100, 200, 400$,
+respectively (compared with $9.1$--$11.0$ for truth $1$ and $10.3$--$11.8$
+for truth $3$). The FIM rank is unaffected by reducing observations from 400 to
+50. This observation-density sweep supports the workflow-limited
+interpretation: rank deficiency is not observed at any tested density, yet the
+staged workflow fails to extract that information into recovered coefficients at
+$\nobs=200$.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\linewidth]{Fig2.png}
+\caption{Jacobian condition number and weakest singular value across
+observation densities for the three compact-matrix truth realizations. All
+Jacobians remain full rank ($3/3$) from 50 to 400 observation points. Truth
+$2$ retains the best conditioning at all densities.}
+\label{fig:fim-density-sweep}
+\end{figure}
+
+We further evaluated local sensitivity at the selected hybrid-recovered
+coefficients for both hard-failure truths ($2$ and $3$), using the six
+targeted seed-audit cases each ($\sigma = 0.005/0.02$, seeds $202/303/404$,
+$\nobs=200$). Across the twelve paired cases,
+recovered-$\bxi$ distances range from $1.54$ to $4.59$, showing that the
+hybrid workflow places the coefficients far from the truth. Nevertheless,
+recovered-point local direct-map conditioning remains comparable to true-point
+conditioning. The recovered/true Jacobian condition-number ratio
+$\kappa(\mathbf{J}_{\mathrm{rec}}) / \kappa(\mathbf{J}_{\mathrm{true}})$
+ranges from $0.919$ to $1.010$ with median $0.953$, and all twelve
+recovered-point Jacobians remain full rank ($3/3$). The recovered/true
+weakest-singular-value ratio ranges from $0.930$ to $1.022$ with median
+$0.979$.
+
+For truth $2$, recovered-$\bxi$ distances are between $4.13$ and $4.59$,
+with condition-number ratios $0.935$--$1.010$. For truth $3$,
+recovered-$\bxi$ distances are between $1.54$ and $2.57$, with
+condition-number ratios $0.919$--$0.959$. In both hard-failure truths, the
+hybrid workflow does not appear to fail by moving into a locally unobservable
+region of the direct FDM-KLE map. It moves to wrong coefficient values that
+still have locally observable sparse-head sensitivity. This replicated finding
+across two truths strengthens the workflow-limited interpretation: the failure
+mechanism is not loss of local direct-map observability at the recovered
+parameters (Figure~\ref{fig:recovered-fim}).
+
+The close agreement of condition numbers between true and recovered points
+(ratio $0.919$--$1.010$) indicates that the local sensitivity spectra at the true
+and recovered points are comparable. This observation supports the side-by-side
+comparison of true-point and recovered-point local diagnostics, but similar
+condition numbers do not, by themselves, imply that the two points lie in the
+same attraction basin of the optimization landscape.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{Fig3.png}
+  \caption{Finite-difference sparse-head Jacobian spectrum diagnostics.
+    Panel~A shows the singular value spectrum of the observation Jacobian
+    $\mathbf{J}$ for 3-, 5-, and 10-mode KLE cases.
+    Panel~B shows the Jacobian condition number $\kappa(\mathbf{J})$ (left
+    axis, bars) and the weakest singular value (right axis, line) versus
+    mode count ($\nobs=200$). The Fisher information and Gauss-Newton Hessian
+    spectra are determined from $\mathbf{J}^T\mathbf{J}$ and
+    $2\mathbf{J}^T\mathbf{J}$ respectively and are not plotted separately.}
+  \label{fig:sensitivity}
+\end{figure}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig4.png}
+  \caption{Recovered-point versus true-point local conditioning for two
+    hard-failure truths ($2$ and $3$). Panels A/C show Jacobian condition
+    numbers; panels B/D show weakest singular values. Each panel pairs
+    true and recovered values across six seed-audit cases per truth. The
+    dashed line marks equal conditioning. All recovered points remain full
+    rank ($3/3$) despite coefficient distances of $1.54$--$4.59$ from truth.}
+  \label{fig:recovered-fim}
+\end{figure*}
+
+\subsection{Mode bridge separates workflow damage from structural claims}
+\label{sec:res-bridge}
+
+Mode-bridge diagnostics compare hybrid recovery with fixed-head coefficient
+recovery. At 3 modes, workflow damage is visible but still tolerable in the
+representative bridge case: hybrid logK RMSE is $0.125$, while perfect-head
+recovery gives logK RMSE $1.72 \times 10^{-4}$. At 5 and 10 modes, the
+hybrid workflow fails with logK RMSE $1.219$ and $1.426$, respectively, while
+perfect-head recovery remains near exact ($7.42 \times 10^{-4}$ and
+$1.35 \times 10^{-3}$).
+
+The conclusion is that 5/10-mode failure in the current hybrid workflow is not
+evidence of structural impossibility. It is a workflow-limited failure under
+the tested staged approximation and recovery procedure.
+
+%% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Workflow-limited failure is distinct from non-identifiability}
+\label{sec:disc-workflow}
+
+The main result is the separation between local information content and
+workflow recovery. The direct FDM-KLE baseline and the sparse-head Jacobian
+diagnostic show that low-dimensional coefficient information can be present in
+the direct inverse map. The PINN-hybrid workflow can still fail to recover
+that information. This is not a semantic distinction: it determines whether one
+should conclude that the observations are intrinsically insufficient or that
+the tested workflow fails to reliably preserve recoverable coefficient information.
+
+For the present benchmark, the moderate-noise 3-mode failure is best described
+as workflow-limited. This phrase should be read narrowly. It means
+workflow-limited relative to the tested PINN-hybrid design and the direct
+FDM-KLE baseline in the same reduced KLE space. It does not imply that all
+PINN-based groundwater inverse formulations fail.
+
+For clarity, we distinguish four failure categories relevant to this benchmark:
+(i) \emph{information-limited} failure, where the observations do not contain
+coefficient-level information in any reduced map; (ii) \emph{optimization-limited}
+failure, where information is present in the direct map but the optimizer cannot
+reach it; (iii) \emph{architecture-limited} failure, where the neural
+representation cannot approximate the required function space; and
+(iv) \emph{stage-coupling} failure, where errors in one training stage propagate
+irreversibly into subsequent stages (these categories are not mutually
+exclusive). The present workflow-limited finding combines
+elements of (ii) and (iv): the direct map contains recoverable information, but
+the staged A/B optimization pathway does not reliably transmit it into recovered
+coefficients. We note that establishing the precise causal chain from the
+stage-coupling mechanism (iv) to the observed recovery gap would require tracing
+the optimization trajectory from initial to recovered parameters; the present
+diagnostic framework identifies the gap and its stage-of-origin, but does not
+fully resolve the mechanistic link between them.
+
+\subsection{Relationship to classical inverse modeling}
+\label{sec:disc-classical}
+
+The direct FDM-KLE baseline plays a role similar to classical deterministic
+parameter estimation in a reduced parameter
+space~\cite{doherty2015pest, zhou2014inverse, hill2007effective}. It is not a
+full comparison against PEST, EnKF, EnRML, MCMC, or geostatistical inversion
+software~\cite{evensen2003enkf, oliver2008inverse, white2018model}.
+However, it is strong enough for the specific diagnostic claim made here: if
+direct FDM-KLE least squares recovers the same coefficients from the same
+observations while PINN-hybrid fails, then the failure cannot be assigned
+solely to low-dimensional information absence.
+
+A broader comparison with PEST-style regularized inversion, adjoint
+least-squares, or ensemble methods would be valuable, but it is not required
+to establish the workflow-limited finding. Those methods would address a wider
+question: which inverse family is most accurate or efficient? The present
+paper addresses a narrower diagnostic question: whether the tested PINN-hybrid
+workflow loses recoverable information. The comparison is diagnostic rather than
+competitive: we test whether recoverable coefficient information is accessible
+to a direct solver in the same reduced space, not whether FDM-KLE is a superior
+inversion method for practical applications.
+
+\subsection{What the FIM and Hessian diagnostics do and do not prove}
+\label{sec:disc-fim}
+
+The Jacobian, Fisher-information, and Gauss-Newton diagnostics are local and
+linearization-based~\cite{tarantola2005inverse, aster2018parameter}. A full-rank Jacobian
+at a reference point does not prove global uniqueness, rule out multimodality,
+or quantify posterior uncertainty under nonlinear effects. It only shows that
+small perturbations in the tested coefficient directions are locally visible to
+the sparse-head observation map. Conversely, increasing condition number
+indicates increasing sensitivity burden, not categorical failure.
+
+This local interpretation is sufficient for the paper's logic. The FIM
+diagnostic is used to reject an overly strong structural claim: the 5/10-mode
+hybrid failures should not be reported as if the direct observation map had no
+local coefficient information. They should instead be presented as workflow
+failures under a more difficult conditioning regime.
+
+The recovered-point FIM analysis (Section~\ref{sec:res-obs}) adds an
+important nuance to this local interpretation. When the same Jacobian
+diagnostic is evaluated at the hybrid-recovered coefficients rather than at
+the true coefficients, the direct-map remains full rank with comparable
+conditioning (recovered/true condition-number ratio: $0.919$--$1.010$,
+median $0.953$, across twelve paired cases from two hard-failure truths).
+This means that the hybrid workflow does not fail by drifting into a locally
+unobservable region of parameter space. It reaches coefficient values that
+remain locally observable under the direct linearized map.
+
+This finding has two implications. First, it further strengthens the
+workflow-limited interpretation: the failure mechanism is not loss of local
+direct-map observability at the recovered parameters. The local sensitivity
+spectra at true and recovered points are comparable; what is lost is the optimization pathway
+that connects the data to the correct coefficient values. Second, it
+illustrates an important limitation of local observability diagnostics: a
+full-rank Jacobian at a point does not guarantee that an iterative method can
+reach that neighborhood from a distant starting point, nor does it guarantee
+that a different optimization landscape (here, the PINN-hybrid loss surface)
+shares the same favorable geometry as the direct least-squares landscape.
+
+The distinction between local observability at a point and recoverability by a
+specific optimization procedure is therefore not merely semantic. A full-rank
+FIM at the true coefficients tells us that the observations contain
+low-dimensional information; a full-rank FIM at the recovered coefficients
+tells us that the optimization has not collapsed into an unobservable region;
+but neither guarantees that the PINN-hybrid training trajectory can connect the
+starting point to the correct solution. This three-way
+separation---information content, local geometry, and optimization
+pathway---is the essential diagnostic structure of the workflow-limited
+failure.
+
+\subsection{Transfer to field applications}
+\label{sec:disc-transfer}
+
+The synthetic results support a transfer in logic rather than a transfer in
+numerical thresholds. The exact noise and observation-density boundaries are
+specific to the steady unit-square benchmark. Real aquifers may have pumping,
+recharge, transient responses, geological boundaries, irregular observation
+layouts, and independent measurements that change
+identifiability~\cite{yeh2015flow, cardiff2013hydraulic}. The limitation also
+follows the broader modeling principle that controlled models can be useful
+diagnostic tools without being validated as direct field
+surrogates~\cite{konikow1992validation}.
+
+What is likely to transfer is the evaluation principle. Head fit should not be
+equated with conductivity recovery. Reduced parameterizations should be matched
+to the information content of the data. Direct deterministic baselines and
+closed-loop validation should be reported before claiming PINN-based
+conductivity inversion success. When sparse head-only data are the dominant
+information source, unconstrained conductivity maps should be treated with
+particular caution.
+
+\subsection{Limitations and next steps}
+\label{sec:disc-limit}
+
+The current study is synthetic, steady, source-free, and uses regular boundary
+conditions. The main noise matrix now includes a compact eight-truth FDM check, but
+seed coverage is still concentrated in targeted audit cases rather than a full
+factorial ensemble. The FIM diagnostic has been repeated across the compact
+truth realizations for $\nobs=200$, at recovered points for two hard-failure
+truths ($2$ and $3$, twelve paired cases), and across four observation
+densities ($50$--$400$), but should still be extended to
+truth/recovered-point combinations across densities.
+The direct baseline is deterministic FDM-KLE least squares, not a complete
+hydrogeologic inversion ecosystem~\cite{doherty2015pest, hill2007effective}.
+
+The most important next extension is not to make the benchmark broader in
+every possible direction, but to make the current diagnostic claim
+statistically firmer. The 3-mode noise/density matrix has been expanded to eight
+truth realizations for the direct FDM-KLE baseline (Section~4.3), and the
+Jacobian diagnostic has been extended across observation layouts ($50$--$400$,
+Section~4.5). A natural next stage would be to repeat the matched hybrid
+comparison across the same expanded truth set and to extend the
+recovered-point diagnostic across observation densities. More general hydraulic excitations, transient cases, and
+Bayesian posterior analysis are valuable later extensions.
+
+The current study deliberately isolates the staged A/B workflow because it
+represents one practical way to separate head approximation from coefficient
+recovery in PINN-KLE inverse studies~\cite{tartakovsky2020subsurface,
+guo2023htpinn}. A joint end-to-end optimization that updates $h$ and $\bxi$
+simultaneously may alleviate the stage-coupling failure mode (iv), but would
+introduce its own convergence challenges in the combined landscape; evaluating
+such alternatives is beyond the present diagnostic scope and would be a
+valuable extension.
+
+\subsection{Evidence-type labeling for identifiability claims}
+\label{sec:disc-evidence}
+
+The reduced-parameterization experiments demonstrate that identifiability
+claims must be labeled by evidence type. Scalar effective conductivity is
+structurally unidentifiable under the tested steady source-free setup because
+changing a homogeneous scalar conductivity does not change the head solution.
+Homogeneous axis-aligned anisotropy is also structurally unidentifiable under
+the same left-right loading. A two-zone contrast becomes meaningful when an
+absolute scale prior is imposed. Rotated anisotropy is numerically recoverable
+in the tested homogeneous-tensor setting under multistart optimization, but local Hessian analysis reveals
+shallow valleys.
+
+These cases should not be collapsed into a single vague ``identifiability''
+scale. They represent analytic structural arguments, numerical invariance
+tests, optimization recoverability, local-curvature uncertainty, and
+workflow-limited diagnostics. The PINN-KLE diagnostic framework in this paper
+addresses the last two categories; it does not replace structural analysis or
+geometric invariance arguments.
+
+%% =====================================================================
+\section{Conclusions}
+\label{sec:conclusions}
+
+This paper presents a controlled numerical diagnostic study of PINN-KLE
+groundwater conductivity inversion under sparse steady head observations. The
+main conclusions are:
+\begin{enumerate}
+\item In the tested staged PINN-KLE workflow, the head-observation loss
+  provides no direct gradient pathway to KLE coefficients; updates are mediated
+  through the PDE-residual branch in the implemented staged workflow.
+\item No-truth round selection can identify the best available alternating
+  round, but selecting the best round is not equivalent to conductivity
+  recovery.
+\item Direct FDM-KLE least-squares passes 24/24 cases across an expanded set of
+  eight truth realizations ($\sigma_{\log K}=0.17$--$0.80$, three noise levels),
+  showing that the sparse direct inverse problem still contains recoverable
+  low-dimensional information under the tested 3-mode parameterization. In the
+  matched three-truth seed audit, the PINN-hybrid workflow weak-passes only
+  3/18 conductivity-recovery cases. This gap makes the moderate-noise hybrid
+  failure workflow-limited in this setting.
+\item Late-round hybrid degradation is Stage-B-led with frequent Stage A/B
+  coupling.
+\item Sparse-head Jacobian/FIM/Gauss-Newton diagnostics show linearized local
+  observability for the direct map across observation densities from 50 to 400,
+  with increasing conditioning burden as KLE mode count increases.
+\item Recovery-point local conditioning remains comparable to true-point
+  conditioning (condition-number ratio $0.919$--$1.010$, median $0.953$, across twelve paired
+  cases), showing that the observed hybrid recovery failures are not caused
+  by the workflow moving the coefficients into a locally unobservable region.
+\end{enumerate}
+
+The broader recommendation is methodological: PINN-based groundwater inverse
+studies should distinguish head fitting, linearized local observability,
+deterministic baseline recoverability, and closed-loop conductivity recovery.
+Without this separation, a successful PINN head fit can be mistaken for a
+successful hydraulic-conductivity inversion. This study focuses on diagnostic
+information accessibility in a controlled benchmark, not on proposing a
+field-ready inverse solver.
+
+%% =====================================================================
+\appendix
+\section{Training and baseline configuration}
+\label{sec:appendix-config}
+
+This appendix summarizes the computational settings used in the reported
+experiments. All values are extracted from the YAML configuration files and
+source code in the working repository. The pilot experiments (Section~4.3,
+pilot aggregate) use high-budget settings; the CG compact multi-truth matrix
+and seed audit use medium-budget settings to keep the experimental matrix
+computationally tractable. Both configurations are documented below.
+
+\subsection*{A.1 PINN-hybrid workflow}
+
+\begin{table}[!ht]
+  \caption{Neural network and domain configuration.}
+  \label{tab:config-nn}
+  \centering\small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.38\columnwidth}p{0.54\columnwidth}@{}}
+    \toprule
+    Setting & Value \\
+    \midrule
+    Neural network depth & 5 hidden layers \\
+    Neural network width & 128 neurons per layer \\
+    Activation function & tanh \\
+    Weight initialization & Xavier \\
+    Hard Dirichlet BC & Yes (left/right enforced analytically) \\
+    Fourier features & 8 frequencies, max 8.0, linear spacing \\
+    KLE covariance kernel & Exponential, $\sigma^2\!=\!1.0$, $l_x\!=\!l_y\!=\!0.2$ \\
+    FDM reference grid & $51 \times 51$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection*{A.2 Stage-wise settings: high-budget (pilot) vs.\ medium-budget (CG compact)}
+
+\begin{table}[!ht]
+  \caption{Common optimizer and iteration settings.}
+  \label{tab:config-budget}
+  \centering\small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.31\columnwidth}p{0.28\columnwidth}p{0.30\columnwidth}@{}}
+    \toprule
+    Setting & High-budget (pilot) & Medium-budget (CG compact) \\
+    \midrule
+    Stage A iterations/round & 500 & 500 \\
+    Stage B iterations/round & 1000 & 1000 \\
+    PDE collocation points & 2000 & 1000 \\
+    BC sampling points & 400 & 200 \\
+    Alternating rounds (max) & 6--8 & 5 \\
+    Closed-loop validation grid & $201 \times 201$ & $101 \times 101$ \\
+    Observation seeds & 202, 303, 404 & 202, 303, 404 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[!ht]
+  \caption{Stage A (head fitting, $\bxi$ frozen). Common to both budgets.}
+  \label{tab:config-stageA}
+  \centering\small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.38\columnwidth}p{0.54\columnwidth}@{}}
+    \toprule
+    Setting & Value \\
+    \midrule
+    Optimizer & Adam \\
+    Learning rate & $5 \times 10^{-4}$ \\
+    Loss weights: PDE / BC / Data & 1.0 / 10--20 / 100.0 \\
+    Weight decay / Gradient clip & $10^{-5}$ / 1.0 \\
+    LR scheduler patience & Equal to iteration count (disabled) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[!ht]
+  \caption{Stage B (coefficient recovery, $h$ frozen). Common to both budgets.}
+  \label{tab:config-stageB}
+  \centering\small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.38\columnwidth}p{0.54\columnwidth}@{}}
+    \toprule
+    Setting & Value \\
+    \midrule
+    Optimizer & Adam \\
+    Learning rate & $10^{-2}$ \\
+    Coefficient initialization & From previous round (round 1: zero) \\
+    $h$ smoothing $\sigma$ & 0.0 (no Gaussian smoothing) \\
+    logK clamping & $\pm 3.0$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection*{A.3 Direct FDM-KLE baseline}
+
+The direct baseline optimizes the same low-dimensional KLE coefficients as the
+PINN-hybrid workflow, but evaluates each candidate through the FDM forward
+solver and minimizes the sparse-head residual directly. It is included as a
+diagnostic comparator rather than as a claim of best-practice hydrogeologic
+inversion.
+
+\begin{table}[!ht]
+  \caption{FDM-KLE baseline configuration.}
+  \label{tab:config-baseline}
+  \centering\small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.38\columnwidth}p{0.54\columnwidth}@{}}
+    \toprule
+    Setting & Value \\
+    \midrule
+    Optimizer & scipy.optimize.minimize (Powell) \\
+    Objective & Sum of squared sparse-head residuals \\
+    Forward model & FDM on $81 \times 81$ grid \\
+    Max iterations & 80 \\
+    Random starts & 2 \\
+    Coefficient bounds & $\pm 3.0$ in $\bxi$ \\
+    Closed-loop validation & FDM on $201 \times 201$ grid \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection*{A.4 Jacobian/FIM diagnostic}
+
+The local sensitivity diagnostic uses central finite differences of the
+sparse-head observation map with respect to KLE coefficients. The reported FIM
+and Gauss--Newton spectra are derived from the same Jacobian and are used only
+as local linearized observability checks.
+
+\begin{table}[!ht]
+  \caption{Jacobian/FIM diagnostic configuration.}
+  \label{tab:config-fim}
+  \centering\small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}p{0.38\columnwidth}p{0.54\columnwidth}@{}}
+    \toprule
+    Setting & Value \\
+    \midrule
+    Finite-difference step & $\delta = 10^{-3}$ (absolute perturbation) \\
+    Reference points & (a) true $\bxi$, (b) hybrid-recovered $\bxi$ \\
+    Observation densities scanned & 50, 100, 200, 400 \\
+    Noise level for FIM scan & $\sigma = 0.005$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%% =====================================================================
+\backmatter
+
+\section*{Acknowledgements}
+The author thanks the China Geological Survey for institutional support.
+
+%% ---- Declarations ----
+\section*{Statements and Declarations}
+
+\paragraph{Funding} This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
+
+\paragraph{Competing interests} The author declares no competing interests.
+
+\paragraph{Ethics approval} Not applicable. This study is a purely computational investigation using synthetic data and does not involve human participants or animals.
+
+\paragraph{Consent to participate} Not applicable.
+
+\paragraph{Consent for publication} Not applicable.
+
+\paragraph{Data availability} The machine-readable summary tables and metadata
+supporting the reported numerical results are supplied as Online Resource~2
+for review, including the FDM-KLE baseline metrics, PINN-hybrid recovery
+statistics, Jacobian/FIM diagnostics, and figure-level summary data. The raw
+NumPy arrays for truth realizations, synthetic observation sets, and FDM
+reference solutions are retained in the project output tree and are available
+from the author upon reasonable request during review. A public
+archive containing the review data package and the raw numerical arrays will be
+deposited in Zenodo or HydroShare before publication, and the persistent
+identifier will be added to the final article if the manuscript is accepted.
+
+\paragraph{Code availability} The Python source code implementing the
+finite-difference forward solver, PINN-KLE training workflow, FDM-KLE
+least-squares baseline, Jacobian/FIM diagnostic scripts, and figure-generation
+utilities is summarized in Online Resource~2 for review and will be made
+publicly available in a GitHub repository before publication if the manuscript
+is accepted. The training configurations (YAML) are self-documented in
+Appendix~A, and the exact command-line invocations for each experiment are
+recorded in {\tt runner\_command.json} files within each experiment output
+directory. The computational environment uses Python~3.11+ with PyTorch and
+NumPy/SciPy as the primary dependencies; dependency files are included in
+Online Resource~2.
+
+\paragraph{Author contribution} F.Y. conceived the study, designed the diagnostic framework, implemented the experiments, and wrote the manuscript.
+
+\paragraph{Use of AI-assisted tools} During the preparation of this work, the
+author used a large language model based coding assistant for code debugging,
+workflow organization, and manuscript copy-editing. The author reviewed and
+edited the generated content and takes full responsibility for the final
+manuscript, code, and reported results.
+
+%% ---- Bibliography ----
+\bibliography{references}
+
+\end{document}

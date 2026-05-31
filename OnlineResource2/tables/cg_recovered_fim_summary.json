@@ -1,0 +1,462 @@
+{
+  "diagnostic": "cg_hybrid_recovered_point_sparse_head_jacobian_fim",
+  "settings": {
+    "truth_id": "456",
+    "n_obs": 200,
+    "noises": [
+      0.005,
+      0.02
+    ],
+    "seeds": [
+      202,
+      303,
+      404
+    ],
+    "hybrid_root": "outputs/cg_seed_audit/hybrid",
+    "solve_N": 81,
+    "fd_step": 0.001
+  },
+  "rows": [
+    {
+      "case": "truth_456_obs_200_noise_005_seed_202_true",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "reference_label": "true",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.532297680598674,
+      "gauss_newton_hessian_condition_number": 56.73550834915259,
+      "jacobian_frobenius_norm": 0.8132226416466087,
+      "weakest_singular_value": 0.10522218636873755,
+      "strongest_singular_value": 0.7925648303327633,
+      "xi_distance_to_true": 0.0,
+      "h0_std": 0.30191412913536714,
+      "h0_range_min": 0.012380440178743454,
+      "h0_range_max": 0.9958560413658215,
+      "singular_values": [
+        0.7925648303327633,
+        0.1486618515358594,
+        0.10522218636873755
+      ],
+      "column_norms": [
+        0.18871319865964145,
+        0.5661863781399217,
+        0.5524050857361227
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_005_seed_202_hybrid_recovered",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "reference_label": "hybrid_recovered",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.379125389394038,
+      "gauss_newton_hessian_condition_number": 54.4514915123999,
+      "jacobian_frobenius_norm": 0.7512471520205717,
+      "weakest_singular_value": 0.09954927648648243,
+      "strongest_singular_value": 0.7345865936172095,
+      "xi_distance_to_true": 4.1310632384359245,
+      "h0_std": 0.3312546118994754,
+      "h0_range_min": 0.007066193670683997,
+      "h0_range_max": 0.9970612277047828,
+      "singular_values": [
+        0.7345865936172095,
+        0.12183908013401297,
+        0.09954927648648243
+      ],
+      "column_norms": [
+        0.1585404491388382,
+        0.5268809491727365,
+        0.5115013927690829
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_005_seed_303_true",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 303,
+      "reference_label": "true",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.291486652042077,
+      "gauss_newton_hessian_condition_number": 53.16577759690814,
+      "jacobian_frobenius_norm": 0.8209413626805442,
+      "weakest_singular_value": 0.10969788925117309,
+      "strongest_singular_value": 0.7998606952321187,
+      "xi_distance_to_true": 0.0,
+      "h0_std": 0.3021734533877675,
+      "h0_range_min": 0.0017840707746615812,
+      "h0_range_max": 0.9984992010222623,
+      "singular_values": [
+        0.7998606952321187,
+        0.14877487111880836,
+        0.10969788925117309
+      ],
+      "column_norms": [
+        0.19708048182003976,
+        0.5697077485179538,
+        0.5572585449537527
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_005_seed_303_hybrid_recovered",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 303,
+      "reference_label": "hybrid_recovered",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.814226890513449,
+      "gauss_newton_hessian_condition_number": 46.433688115396485,
+      "jacobian_frobenius_norm": 0.7466654529920043,
+      "weakest_singular_value": 0.10699628347834629,
+      "strongest_singular_value": 0.7290969520631472,
+      "xi_distance_to_true": 4.178058108388654,
+      "h0_std": 0.33162336170350065,
+      "h0_range_min": 0.0008800973982897445,
+      "h0_range_max": 0.999126933623881,
+      "singular_values": [
+        0.7290969520631472,
+        0.12032758829879918,
+        0.10699628347834629
+      ],
+      "column_norms": [
+        0.16671100728656135,
+        0.5177451791777106,
+        0.5115238686312648
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_005_seed_404_true",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 404,
+      "reference_label": "true",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.99369360492629,
+      "gauss_newton_hessian_condition_number": 48.911750239586716,
+      "jacobian_frobenius_norm": 0.8267014472256244,
+      "weakest_singular_value": 0.11511354837560762,
+      "strongest_singular_value": 0.8050688871148601,
+      "xi_distance_to_true": 0.0,
+      "h0_std": 0.27965526465938406,
+      "h0_range_min": 0.01634316593034178,
+      "h0_range_max": 0.9995391654393609,
+      "singular_values": [
+        0.8050688871148601,
+        0.14848650048054557,
+        0.11511354837560762
+      ],
+      "column_norms": [
+        0.19466260127529972,
+        0.5718888505831495,
+        0.56434466161058
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_005_seed_404_hybrid_recovered",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 404,
+      "reference_label": "hybrid_recovered",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.9363177748372316,
+      "gauss_newton_hessian_condition_number": 48.11250427352321,
+      "jacobian_frobenius_norm": 0.7632929855180213,
+      "weakest_singular_value": 0.10749415028033209,
+      "strongest_singular_value": 0.745613585280492,
+      "xi_distance_to_true": 4.444121484462973,
+      "h0_std": 0.31556784045128866,
+      "h0_range_min": 0.008959333696850117,
+      "h0_range_max": 0.999739649980346,
+      "singular_values": [
+        0.745613585280492,
+        0.12296979646113985,
+        0.10749415028033209
+      ],
+      "column_norms": [
+        0.16257328542998226,
+        0.5294909387712328,
+        0.5251908742206727
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_02_seed_202_true",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 202,
+      "reference_label": "true",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.532297680598674,
+      "gauss_newton_hessian_condition_number": 56.73550834915259,
+      "jacobian_frobenius_norm": 0.8132226416466087,
+      "weakest_singular_value": 0.10522218636873755,
+      "strongest_singular_value": 0.7925648303327633,
+      "xi_distance_to_true": 0.0,
+      "h0_std": 0.30191412913536714,
+      "h0_range_min": 0.012380440178743454,
+      "h0_range_max": 0.9958560413658215,
+      "singular_values": [
+        0.7925648303327633,
+        0.1486618515358594,
+        0.10522218636873755
+      ],
+      "column_norms": [
+        0.18871319865964145,
+        0.5661863781399217,
+        0.5524050857361227
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_02_seed_202_hybrid_recovered",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 202,
+      "reference_label": "hybrid_recovered",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.605608817770349,
+      "gauss_newton_hessian_condition_number": 57.84528548894618,
+      "jacobian_frobenius_norm": 0.764584287423177,
+      "weakest_singular_value": 0.09840130301965551,
+      "strongest_singular_value": 0.748401817926384,
+      "xi_distance_to_true": 4.265168091361258,
+      "h0_std": 0.3315670722321134,
+      "h0_range_min": 0.006898027424777762,
+      "h0_range_max": 0.9969909478073093,
+      "singular_values": [
+        0.748401817926384,
+        0.1216595046140042,
+        0.09840130301965551
+      ],
+      "column_norms": [
+        0.15590011829041803,
+        0.5367170433103762,
+        0.5217462037347363
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_02_seed_303_true",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 303,
+      "reference_label": "true",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.291486652042077,
+      "gauss_newton_hessian_condition_number": 53.16577759690814,
+      "jacobian_frobenius_norm": 0.8209413626805442,
+      "weakest_singular_value": 0.10969788925117309,
+      "strongest_singular_value": 0.7998606952321187,
+      "xi_distance_to_true": 0.0,
+      "h0_std": 0.3021734533877675,
+      "h0_range_min": 0.0017840707746615812,
+      "h0_range_max": 0.9984992010222623,
+      "singular_values": [
+        0.7998606952321187,
+        0.14877487111880836,
+        0.10969788925117309
+      ],
+      "column_norms": [
+        0.19708048182003976,
+        0.5697077485179538,
+        0.5572585449537527
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_02_seed_303_hybrid_recovered",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 303,
+      "reference_label": "hybrid_recovered",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.898085218302641,
+      "gauss_newton_hessian_condition_number": 47.583579678965535,
+      "jacobian_frobenius_norm": 0.7441643519616933,
+      "weakest_singular_value": 0.10531625276809625,
+      "strongest_singular_value": 0.7264804864666293,
+      "xi_distance_to_true": 4.1599448184729715,
+      "h0_std": 0.3316258593316318,
+      "h0_range_min": 0.0008851272249637723,
+      "h0_range_max": 0.9991563164498328,
+      "singular_values": [
+        0.7264804864666293,
+        0.12212768898437137,
+        0.10531625276809625
+      ],
+      "column_norms": [
+        0.16697285315163996,
+        0.5181470011070124,
+        0.507370017132248
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_02_seed_404_true",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 404,
+      "reference_label": "true",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.99369360492629,
+      "gauss_newton_hessian_condition_number": 48.911750239586716,
+      "jacobian_frobenius_norm": 0.8267014472256244,
+      "weakest_singular_value": 0.11511354837560762,
+      "strongest_singular_value": 0.8050688871148601,
+      "xi_distance_to_true": 0.0,
+      "h0_std": 0.27965526465938406,
+      "h0_range_min": 0.01634316593034178,
+      "h0_range_max": 0.9995391654393609,
+      "singular_values": [
+        0.8050688871148601,
+        0.14848650048054557,
+        0.11511354837560762
+      ],
+      "column_norms": [
+        0.19466260127529972,
+        0.5718888505831495,
+        0.56434466161058
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_02_seed_404_hybrid_recovered",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 404,
+      "reference_label": "hybrid_recovered",
+      "n_modes": 3,
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.923549289019027,
+      "gauss_newton_hessian_condition_number": 47.935534757475715,
+      "jacobian_frobenius_norm": 0.758799291292921,
+      "weakest_singular_value": 0.10706669798626188,
+      "strongest_singular_value": 0.7412815607203983,
+      "xi_distance_to_true": 4.585634769503269,
+      "h0_std": 0.3169297562055873,
+      "h0_range_min": 0.00918850754749712,
+      "h0_range_max": 0.9997527301699414,
+      "singular_values": [
+        0.7412815607203983,
+        0.12171579348995058,
+        0.10706669798626188
+      ],
+      "column_norms": [
+        0.1610958882378184,
+        0.5283205242494214,
+        0.5202902102829954
+      ]
+    }
+  ],
+  "paired_rows": [
+    {
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "true_rank": 3,
+      "recovered_rank": 3,
+      "true_condition_number": 7.532297680598674,
+      "recovered_condition_number": 7.379125389394038,
+      "condition_ratio_recovered_over_true": 0.9796645993427517,
+      "true_weakest_singular_value": 0.10522218636873755,
+      "recovered_weakest_singular_value": 0.09954927648648243,
+      "weakest_sv_ratio_recovered_over_true": 0.9460863713440135,
+      "recovered_xi_distance_to_true": 4.1310632384359245
+    },
+    {
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 303,
+      "true_rank": 3,
+      "recovered_rank": 3,
+      "true_condition_number": 7.291486652042077,
+      "recovered_condition_number": 6.814226890513449,
+      "condition_ratio_recovered_over_true": 0.9345456167851635,
+      "true_weakest_singular_value": 0.10969788925117309,
+      "recovered_weakest_singular_value": 0.10699628347834629,
+      "weakest_sv_ratio_recovered_over_true": 0.9753723085168851,
+      "recovered_xi_distance_to_true": 4.178058108388654
+    },
+    {
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 404,
+      "true_rank": 3,
+      "recovered_rank": 3,
+      "true_condition_number": 6.99369360492629,
+      "recovered_condition_number": 6.9363177748372316,
+      "condition_ratio_recovered_over_true": 0.9917960618050748,
+      "true_weakest_singular_value": 0.11511354837560762,
+      "recovered_weakest_singular_value": 0.10749415028033209,
+      "weakest_sv_ratio_recovered_over_true": 0.9338097191616928,
+      "recovered_xi_distance_to_true": 4.444121484462973
+    },
+    {
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 202,
+      "true_rank": 3,
+      "recovered_rank": 3,
+      "true_condition_number": 7.532297680598674,
+      "recovered_condition_number": 7.605608817770349,
+      "condition_ratio_recovered_over_true": 1.009732904922293,
+      "true_weakest_singular_value": 0.10522218636873755,
+      "recovered_weakest_singular_value": 0.09840130301965551,
+      "weakest_sv_ratio_recovered_over_true": 0.935176376917515,
+      "recovered_xi_distance_to_true": 4.265168091361258
+    },
+    {
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 303,
+      "true_rank": 3,
+      "recovered_rank": 3,
+      "true_condition_number": 7.291486652042077,
+      "recovered_condition_number": 6.898085218302641,
+      "condition_ratio_recovered_over_true": 0.9460464713832728,
+      "true_weakest_singular_value": 0.10969788925117309,
+      "recovered_weakest_singular_value": 0.10531625276809625,
+      "weakest_sv_ratio_recovered_over_true": 0.9600572398157609,
+      "recovered_xi_distance_to_true": 4.1599448184729715
+    },
+    {
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.02,
+      "seed": 404,
+      "true_rank": 3,
+      "recovered_rank": 3,
+      "true_condition_number": 6.99369360492629,
+      "recovered_condition_number": 6.923549289019027,
+      "condition_ratio_recovered_over_true": 0.9899703475917426,
+      "true_weakest_singular_value": 0.11511354837560762,
+      "recovered_weakest_singular_value": 0.10706669798626188,
+      "weakest_sv_ratio_recovered_over_true": 0.9300964091291025,
+      "recovered_xi_distance_to_true": 4.585634769503269
+    }
+  ],
+  "limitation": "Local finite-difference sensitivity at selected points; not a global identifiability proof."
+}

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Local/editor state
+.DS_Store
+.vscode/
+.idea/
+.workbuddy/
+.codebuddy/
+
+# Generated experiment outputs (not for public repo)
+outputs/
+data/
+
+# Model weights and large binary files
+*.pt
+*.pth
+*.pkl
+*.npy
+*.npz
+
+# LaTeX build byproducts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# OS files
+Thumbs.db
+desktop.ini

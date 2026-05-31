@@ -1,0 +1,271 @@
+{
+  "rows": [
+    {
+      "truth_id": 123,
+      "logK_std": 0.3637,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.020334,
+      "h_rmse": 0.0007337351,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 123,
+      "logK_std": 0.3637,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.040561,
+      "h_rmse": 0.0012944254,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 123,
+      "logK_std": 0.3637,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.081488,
+      "h_rmse": 0.0024542092,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 456,
+      "logK_std": 0.7069,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.017216,
+      "h_rmse": 0.0008748339,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 456,
+      "logK_std": 0.7069,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.034386,
+      "h_rmse": 0.0013952324,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 456,
+      "logK_std": 0.7069,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.069233,
+      "h_rmse": 0.0025144896,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 789,
+      "logK_std": 0.4666,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.018424,
+      "h_rmse": 0.0006904278,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 789,
+      "logK_std": 0.4666,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.037197,
+      "h_rmse": 0.0012154107,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 789,
+      "logK_std": 0.4666,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.075034,
+      "h_rmse": 0.0023080566,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 321,
+      "logK_std": 0.4023,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.016024,
+      "h_rmse": 0.0004584556,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 321,
+      "logK_std": 0.4023,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.032142,
+      "h_rmse": 0.0008728837,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 321,
+      "logK_std": 0.4023,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.064365,
+      "h_rmse": 0.0017831203,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 555,
+      "logK_std": 0.1657,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.019952,
+      "h_rmse": 0.0005435836,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 555,
+      "logK_std": 0.1657,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.039905,
+      "h_rmse": 0.0010947049,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 555,
+      "logK_std": 0.1657,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.080046,
+      "h_rmse": 0.0022038055,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 777,
+      "logK_std": 0.3382,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.016976,
+      "h_rmse": 0.0004501258,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 777,
+      "logK_std": 0.3382,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.034245,
+      "h_rmse": 0.0009093701,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 777,
+      "logK_std": 0.3382,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.068873,
+      "h_rmse": 0.0018736732,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 999,
+      "logK_std": 0.5567,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.017473,
+      "h_rmse": 0.0004669242,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 999,
+      "logK_std": 0.5567,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.034841,
+      "h_rmse": 0.0009154237,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 999,
+      "logK_std": 0.5567,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.069615,
+      "h_rmse": 0.0018726004,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 1357,
+      "logK_std": 0.7997,
+      "obs_noise": 0.005,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.023025,
+      "h_rmse": 0.0005497469,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 1357,
+      "logK_std": 0.7997,
+      "obs_noise": 0.01,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.044963,
+      "h_rmse": 0.0010925973,
+      "weak_pass": true,
+      "strong_pass": true
+    },
+    {
+      "truth_id": 1357,
+      "logK_std": 0.7997,
+      "obs_noise": 0.02,
+      "n_obs": 200,
+      "seed": 202,
+      "logK_rmse": 0.08922,
+      "h_rmse": 0.0021919378,
+      "weak_pass": true,
+      "strong_pass": true
+    }
+  ],
+  "n_total": 24,
+  "n_pass_weak": 24,
+  "n_pass_strong": 24
+}

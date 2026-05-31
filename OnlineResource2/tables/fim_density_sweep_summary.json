@@ -1,0 +1,359 @@
+{
+  "diagnostic": "cg_truth_sparse_head_jacobian_fim",
+  "settings": {
+    "truths": [
+      "123",
+      "456",
+      "789"
+    ],
+    "densities": [
+      50,
+      100,
+      200,
+      400
+    ],
+    "obs_noise": 0.005,
+    "seed": 202,
+    "solve_N": 81,
+    "fd_step": 0.001
+  },
+  "rows": [
+    {
+      "case": "truth_123_obs_50_noise_0.005_seed_202",
+      "truth_id": "123",
+      "n_obs": 50,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_123/config_obs50.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 9.118318528035529,
+      "gauss_newton_hessian_condition_number": 83.14373277871645,
+      "jacobian_frobenius_norm": 0.5206597505512636,
+      "weakest_singular_value": 0.056230328731827574,
+      "strongest_singular_value": 0.5127260483129519,
+      "h0_std": 0.28714308085267753,
+      "h0_range_min": 0.010584911664007839,
+      "h0_range_max": 0.994703490223378,
+      "singular_values": [
+        0.5127260483129519,
+        0.07096989049025867,
+        0.056230328731827574
+      ],
+      "column_norms": [
+        0.07504586880088057,
+        0.36900307775888064,
+        0.3595711640614393
+      ]
+    },
+    {
+      "case": "truth_123_obs_100_noise_0.005_seed_202",
+      "truth_id": "123",
+      "n_obs": 100,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_123/config_obs100.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 9.969345959284059,
+      "gauss_newton_hessian_condition_number": 99.38785885589311,
+      "jacobian_frobenius_norm": 0.6908902908100673,
+      "weakest_singular_value": 0.06810961322194349,
+      "strongest_singular_value": 0.6790082973625825,
+      "h0_std": 0.31271553611979525,
+      "h0_range_min": 0.010222423147440634,
+      "h0_range_max": 0.9942822078896039,
+      "singular_values": [
+        0.6790082973625825,
+        0.10788052018387277,
+        0.06810961322194349
+      ],
+      "column_norms": [
+        0.1167259755807555,
+        0.47311727880550525,
+        0.489759615583006
+      ]
+    },
+    {
+      "case": "truth_123_obs_200_noise_0.005_seed_202",
+      "truth_id": "123",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_123/config_obs200.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 10.818516144147978,
+      "gauss_newton_hessian_condition_number": 117.04029156118936,
+      "jacobian_frobenius_norm": 1.0096910981529343,
+      "weakest_singular_value": 0.09195379925617786,
+      "strongest_singular_value": 0.9948036617687025,
+      "h0_std": 0.3067869861021522,
+      "h0_range_min": 0.008912274354006482,
+      "h0_range_max": 0.9946270882591827,
+      "singular_values": [
+        0.9948036617687025,
+        0.14624051088263437,
+        0.09195379925617786
+      ],
+      "column_norms": [
+        0.1550118544949023,
+        0.7110249288645349,
+        0.6999221308035007
+      ]
+    },
+    {
+      "case": "truth_123_obs_400_noise_0.005_seed_202",
+      "truth_id": "123",
+      "n_obs": 400,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_123/config_obs400.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 10.952655075712434,
+      "gauss_newton_hessian_condition_number": 119.96065320752976,
+      "jacobian_frobenius_norm": 1.4728115108043311,
+      "weakest_singular_value": 0.13264348716767507,
+      "strongest_singular_value": 1.4527983629872334,
+      "h0_std": 0.29105611926521946,
+      "h0_range_min": 0.008592836036563573,
+      "h0_range_max": 0.9961494706406018,
+      "singular_values": [
+        1.4527983629872334,
+        0.20237679751233656,
+        0.13264348716767507
+      ],
+      "column_norms": [
+        0.21644945587425937,
+        1.028759237357528,
+        1.031493000926827
+      ]
+    },
+    {
+      "case": "truth_456_obs_50_noise_0.005_seed_202",
+      "truth_id": "456",
+      "n_obs": 50,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_456/config_obs50.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.419389335671944,
+      "gauss_newton_hessian_condition_number": 41.20855944293871,
+      "jacobian_frobenius_norm": 0.4205728581843379,
+      "weakest_singular_value": 0.06377034954140295,
+      "strongest_singular_value": 0.4093667017781544,
+      "h0_std": 0.2826751818935943,
+      "h0_range_min": 0.01806744480139799,
+      "h0_range_max": 0.9956000057084551,
+      "singular_values": [
+        0.4093667017781544,
+        0.07234483420387425,
+        0.06377034954140295
+      ],
+      "column_norms": [
+        0.09205460371513559,
+        0.2982485762625956,
+        0.2818781043882751
+      ]
+    },
+    {
+      "case": "truth_456_obs_100_noise_0.005_seed_202",
+      "truth_id": "456",
+      "n_obs": 100,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_456/config_obs100.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 6.8691036180055285,
+      "gauss_newton_hessian_condition_number": 47.18458451489685,
+      "jacobian_frobenius_norm": 0.5678474504727278,
+      "weakest_singular_value": 0.08023435278379255,
+      "strongest_singular_value": 0.5511380829954814,
+      "h0_std": 0.3083549266793715,
+      "h0_range_min": 0.017881539664557425,
+      "h0_range_max": 0.9958346395884985,
+      "singular_values": [
+        0.5511380829954814,
+        0.11072483512658146,
+        0.08023435278379255
+      ],
+      "column_norms": [
+        0.14670292179189418,
+        0.3811041108067077,
+        0.39457399365939844
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_0.005_seed_202",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_456/config_obs200.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.532297680598674,
+      "gauss_newton_hessian_condition_number": 56.73550834915259,
+      "jacobian_frobenius_norm": 0.8132226416466087,
+      "weakest_singular_value": 0.10522218636873755,
+      "strongest_singular_value": 0.7925648303327633,
+      "h0_std": 0.30191412913536714,
+      "h0_range_min": 0.012380440178743454,
+      "h0_range_max": 0.9958560413658215,
+      "singular_values": [
+        0.7925648303327633,
+        0.1486618515358594,
+        0.10522218636873755
+      ],
+      "column_norms": [
+        0.18871319865964145,
+        0.5661863781399217,
+        0.5524050857361227
+      ]
+    },
+    {
+      "case": "truth_456_obs_400_noise_0.005_seed_202",
+      "truth_id": "456",
+      "n_obs": 400,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_456/config_obs400.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.825600933037622,
+      "gauss_newton_hessian_condition_number": 61.24002996315928,
+      "jacobian_frobenius_norm": 1.1859361934205264,
+      "weakest_singular_value": 0.14806274198345684,
+      "strongest_singular_value": 1.1586799318138485,
+      "h0_std": 0.2817320273388808,
+      "h0_range_min": 0.012360308553474643,
+      "h0_range_max": 0.9974831747943423,
+      "singular_values": [
+        1.1586799318138485,
+        0.2048972789301116,
+        0.14806274198345684
+      ],
+      "column_norms": [
+        0.26379597369495467,
+        0.8200447122702413,
+        0.8150969322753678
+      ]
+    },
+    {
+      "case": "truth_789_obs_50_noise_0.005_seed_202",
+      "truth_id": "789",
+      "n_obs": 50,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_789/config_obs50.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 10.314416495627269,
+      "gauss_newton_hessian_condition_number": 106.38718764526728,
+      "jacobian_frobenius_norm": 0.5620851080097975,
+      "weakest_singular_value": 0.05371761079994002,
+      "strongest_singular_value": 0.5540658109405869,
+      "h0_std": 0.2735063599683454,
+      "h0_range_min": 0.016186538928748197,
+      "h0_range_max": 0.9918056899650551,
+      "singular_values": [
+        0.5540658109405869,
+        0.07787916334348681,
+        0.05371761079994002
+      ],
+      "column_norms": [
+        0.07973350946706512,
+        0.3981111857349318,
+        0.3887026111401591
+      ]
+    },
+    {
+      "case": "truth_789_obs_100_noise_0.005_seed_202",
+      "truth_id": "789",
+      "n_obs": 100,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_789/config_obs100.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 10.370392787635003,
+      "gauss_newton_hessian_condition_number": 107.54504656983299,
+      "jacobian_frobenius_norm": 0.7390910139645464,
+      "weakest_singular_value": 0.0700675231336189,
+      "strongest_singular_value": 0.7266277365523302,
+      "h0_std": 0.29899885362362133,
+      "h0_range_min": 0.016209588607977318,
+      "h0_range_max": 0.9937891148686716,
+      "singular_values": [
+        0.7266277365523302,
+        0.11557768641869617,
+        0.0700675231336189
+      ],
+      "column_norms": [
+        0.12639637022953423,
+        0.5109067429047705,
+        0.518896699324999
+      ]
+    },
+    {
+      "case": "truth_789_obs_200_noise_0.005_seed_202",
+      "truth_id": "789",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_789/config_obs200.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 11.441423800523118,
+      "gauss_newton_hessian_condition_number": 130.90617858317788,
+      "jacobian_frobenius_norm": 1.0770201224631968,
+      "weakest_singular_value": 0.09277115361582336,
+      "strongest_singular_value": 1.0614340849820678,
+      "h0_std": 0.29335997738708863,
+      "h0_range_min": 0.009043477024183632,
+      "h0_range_max": 0.9938099877874492,
+      "singular_values": [
+        1.0614340849820678,
+        0.15723721088123177,
+        0.09277115361582336
+      ],
+      "column_norms": [
+        0.16588862794396714,
+        0.7603501278938994,
+        0.7445273603577228
+      ]
+    },
+    {
+      "case": "truth_789_obs_400_noise_0.005_seed_202",
+      "truth_id": "789",
+      "n_obs": 400,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_789/config_obs400.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 11.750812754586775,
+      "gauss_newton_hessian_condition_number": 138.08160039336127,
+      "jacobian_frobenius_norm": 1.5717075680074781,
+      "weakest_singular_value": 0.131967844805103,
+      "strongest_singular_value": 1.5507294339311326,
+      "h0_std": 0.27685845015861843,
+      "h0_range_min": 0.008948909740851312,
+      "h0_range_max": 0.9962424639969496,
+      "singular_values": [
+        1.5507294339311326,
+        0.21928837180550065,
+        0.131967844805103
+      ],
+      "column_norms": [
+        0.23169454882717264,
+        1.1022989886727026,
+        1.0961383375043925
+      ]
+    }
+  ],
+  "limitation": "Local finite-difference sensitivity around true xi; not a global identifiability proof."
+}

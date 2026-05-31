@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{array}
+
+\begin{document}
+
+\begin{center}
+{\Large Online Resource 1}\\[0.5em]
+{\bfseries Expanded FDM-KLE baseline results for eight truth realizations}
+\end{center}
+
+\noindent\textbf{Article title:} Separating linearized observability, direct recoverability, and workflow limitations in physics-informed neural network inversion\\
+\textbf{Journal:} Computational Geosciences\\
+\textbf{Author:} Fei Yang\\
+\textbf{Affiliation:} China Institute of Geo-Environment Monitoring, China Geological Survey, Minzu University South Road, Beijing 100081, China\\
+\textbf{Corresponding author:} Fei Yang, yangf@cigem.cn
+
+\bigskip
+
+This supplementary table reports the direct FDM-KLE baseline results for eight
+3-mode truth realizations at $n_{\mathrm{obs}}=200$ and observation seed 202.
+Truth labels are anonymized display labels used in the manuscript and do not
+encode the internal random seeds used to generate the fields.
+Cell values are reported as logK RMSE / hydraulic-head RMSE from closed-loop
+validation on the $201 \times 201$ grid. The weak-pass criterion is logK RMSE
+$<0.15$ and head RMSE $<0.006$; the strong-pass criterion is logK RMSE $<0.10$
+and head RMSE $<0.003$.
+
+\begin{table}[h]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}rcccc@{}}
+\toprule
+Truth & $\sigma_{\log K}$ & $\sigma=0.005$ & $\sigma=0.01$ & $\sigma=0.02$ \\
+\midrule
+1 & 0.36 & PASS (0.0203 / 7.3e-4) & PASS (0.0406 / 1.3e-3) & PASS (0.0815 / 2.5e-3) \\
+2 & 0.71 & PASS (0.0172 / 8.7e-4) & PASS (0.0344 / 1.4e-3) & PASS (0.0692 / 2.5e-3) \\
+3 & 0.47 & PASS (0.0184 / 6.9e-4) & PASS (0.0372 / 1.2e-3) & PASS (0.0750 / 2.3e-3) \\
+4 & 0.40 & PASS (0.0160 / 4.6e-4) & PASS (0.0321 / 8.7e-4) & PASS (0.0644 / 1.8e-3) \\
+5 & 0.17 & PASS (0.0200 / 5.4e-4) & PASS (0.0399 / 1.1e-3) & PASS (0.0800 / 2.2e-3) \\
+6 & 0.34 & PASS (0.0170 / 4.5e-4) & PASS (0.0342 / 9.1e-4) & PASS (0.0689 / 1.9e-3) \\
+7 & 0.56 & PASS (0.0175 / 4.7e-4) & PASS (0.0348 / 9.2e-4) & PASS (0.0696 / 1.9e-3) \\
+8 & 0.80 & PASS (0.0230 / 5.5e-4) & PASS (0.0450 / 1.1e-3) & PASS (0.0892 / 2.2e-3) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Median logK RMSE by noise level is 0.0180 at $\sigma=0.005$, 0.0360 at
+$\sigma=0.01$, and 0.0723 at $\sigma=0.02$. All 24 cases satisfy both the weak-
+and strong-pass criteria.
+
+\end{document}

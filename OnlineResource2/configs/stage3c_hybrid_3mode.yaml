@@ -1,0 +1,84 @@
+# Stage 3c hybrid low-dimensional diagnostic: 3-mode KLE.
+
+kle:
+  Lx: 1.0
+  Ly: 1.0
+  nx: 50
+  ny: 50
+  sigma2: 1.0
+  lx: 0.2
+  ly: 0.2
+  cov_type: "exponential"
+  n_modes: 3
+  k_field_file: "outputs/stage3_heterogeneous_3mode/K_field.npz"
+
+physics:
+  w: 0.0
+  domain:
+    x_min: 0.0
+    x_max: 1.0
+    y_min: 0.0
+    y_max: 1.0
+
+boundary_conditions:
+  h_left: 1.0
+  h_right: 0.0
+
+network:
+  input_dim: 2
+  output_dim: 1
+  hidden_layers: 5
+  hidden_width: 128
+  activation: "tanh"
+  init_method: "xavier"
+  hard_dirichlet: true
+  fourier_features:
+    enabled: true
+    num_frequencies: 8
+    max_frequency: 8.0
+    spacing: "linear"
+
+inverse:
+  observation_source: "fdm"
+  fdm_reference_path: "outputs/stage3_heterogeneous_3mode/h_true_N201.npz"
+  n_obs_points: 200
+  obs_noise: 0.005
+  n_modes: 3
+  clamp_logK: 3.0
+  xi_init: "zero"
+  freeze_xi: true
+
+training:
+  phase1_iterations: 0
+  lr_phase1: 5.0e-4
+  phase2_iterations: 1000
+  lr_phase2: 5.0e-4
+  optimizer: "adam"
+  weight_decay: 1.0e-5
+  gradient_clip: 1.0
+  scheduler_patience: 1000
+  scheduler_factor: 0.5
+  n_pde_points: 2000
+  n_bc_points: 400
+  seed: 999
+  weights:
+    pde: 1.0
+    bc_dirichlet: 10.0
+    bc_neumann: 20.0
+    data: 100.0
+    xi_prior: 0.0
+
+logging:
+  print_every: 200
+  plot_every: 10000
+  output_dir: "outputs/stage3c_hybrid_3mode"
+  ref_model_path: ""
+
+validation:
+  n_test_points: 5000
+  n_k_test_points: 2500
+
+diagnostics:
+  gradient_check: false
+  n_pde_points: 256
+  n_bc_points: 80

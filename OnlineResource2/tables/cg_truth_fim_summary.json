@@ -1,0 +1,104 @@
+{
+  "diagnostic": "cg_truth_sparse_head_jacobian_fim",
+  "settings": {
+    "truths": [
+      "123",
+      "456",
+      "789"
+    ],
+    "densities": [
+      200
+    ],
+    "obs_noise": 0.005,
+    "seed": 202,
+    "solve_N": 81,
+    "fd_step": 0.001
+  },
+  "rows": [
+    {
+      "case": "truth_123_obs_200_noise_0.005_seed_202",
+      "truth_id": "123",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_123/config_obs200.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 10.818516144147978,
+      "gauss_newton_hessian_condition_number": 117.04029156118936,
+      "jacobian_frobenius_norm": 1.0096910981529343,
+      "weakest_singular_value": 0.09195379925617786,
+      "strongest_singular_value": 0.9948036617687025,
+      "h0_std": 0.3067869861021522,
+      "h0_range_min": 0.008912274354006482,
+      "h0_range_max": 0.9946270882591827,
+      "singular_values": [
+        0.9948036617687025,
+        0.14624051088263437,
+        0.09195379925617786
+      ],
+      "column_norms": [
+        0.1550118544949023,
+        0.7110249288645349,
+        0.6999221308035007
+      ]
+    },
+    {
+      "case": "truth_456_obs_200_noise_0.005_seed_202",
+      "truth_id": "456",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_456/config_obs200.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 7.532297680598674,
+      "gauss_newton_hessian_condition_number": 56.73550834915259,
+      "jacobian_frobenius_norm": 0.8132226416466087,
+      "weakest_singular_value": 0.10522218636873755,
+      "strongest_singular_value": 0.7925648303327633,
+      "h0_std": 0.30191412913536714,
+      "h0_range_min": 0.012380440178743454,
+      "h0_range_max": 0.9958560413658215,
+      "singular_values": [
+        0.7925648303327633,
+        0.1486618515358594,
+        0.10522218636873755
+      ],
+      "column_norms": [
+        0.18871319865964145,
+        0.5661863781399217,
+        0.5524050857361227
+      ]
+    },
+    {
+      "case": "truth_789_obs_200_noise_0.005_seed_202",
+      "truth_id": "789",
+      "n_obs": 200,
+      "obs_noise": 0.005,
+      "seed": 202,
+      "n_modes": 3,
+      "config": "outputs/stage3c_truth_robustness/truth_789/config_obs200.yaml",
+      "relative_rank_1e-6": 3,
+      "condition_number": 11.441423800523118,
+      "gauss_newton_hessian_condition_number": 130.90617858317788,
+      "jacobian_frobenius_norm": 1.0770201224631968,
+      "weakest_singular_value": 0.09277115361582336,
+      "strongest_singular_value": 1.0614340849820678,
+      "h0_std": 0.29335997738708863,
+      "h0_range_min": 0.009043477024183632,
+      "h0_range_max": 0.9938099877874492,
+      "singular_values": [
+        1.0614340849820678,
+        0.15723721088123177,
+        0.09277115361582336
+      ],
+      "column_norms": [
+        0.16588862794396714,
+        0.7603501278938994,
+        0.7445273603577228
+      ]
+    }
+  ],
+  "limitation": "Local finite-difference sensitivity around true xi; not a global identifiability proof."
+}

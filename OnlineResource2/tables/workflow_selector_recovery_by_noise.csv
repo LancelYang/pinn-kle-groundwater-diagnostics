@@ -1,0 +1,6 @@
+hard_selector_cases,hard_selector_rate,median_hybrid_logK_rmse,median_oracle_h_rmse_regret,n_cases,noise,weak_recovery_cases,weak_recovery_rate
+2,1.0,0.15347995340577636,0.0,2,0.005,1,0.5
+4,1.0,0.17821832713264846,0.0,4,0.01,0,0.0
+4,1.0,0.23550386581779506,0.0,4,0.015,0,0.0
+4,1.0,0.3176203190142982,0.0,4,0.02,0,0.0
+4,1.0,1.1332024390238065,0.0,4,0.05,0,0.0

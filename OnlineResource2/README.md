@@ -23,8 +23,10 @@ training outputs.
   including `numerical_aggregate_map.md`.
 - `figures/`: PNG files corresponding to the four main diagnostic figure
   sources.
-- `src/`: Core scripts for the CG compact matrices, FDM-KLE baseline comparison,
-  Jacobian/FIM diagnostics, recovered-point diagnostics, and summary generation.
+- `src/`: Core modules and diagnostic scripts for the KLE parameterization,
+  FDM solver, PINN training, hybrid workflow, gradient audit, selector audit,
+  stage-coupling diagnostic, Jacobian/FIM local observability, and closed-loop
+  validation.
 - `configs/`: Main YAML configuration files used by the PINN-hybrid and
   Jacobian/FIM diagnostics.
 - `requirements.txt` and `requirements-macos-lock.txt`: dependency files used in
